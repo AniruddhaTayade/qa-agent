@@ -44,14 +44,14 @@ You              QA Agent             OpenAI              Playwright
  |                   |                    |                    |
  |-- paste URL ----->|                    |                    |
  |                   |-- scrape page ---->|                    |
- |                   |                   |                    |
+ |                   |                    |                    |
  |                   |-- send structure ->|                    |
  |                   |<-- test cases JSON-|                    |
- |                   |                   |                    |
- |                   |-- exec tests ------------------------------>|
- |<-- live results via SSE -----------------------------------------|
- |                   |                   |                    |
- |-- download .py -->|                   |                    |
+ |                   |                    |                    |
+ |                   |-- exec tests -------------------------->|
+ |<-- live results via SSE ------------------------------------|
+ |                   |                    |                    |
+ |-- download .py -->|                    |                    |
 ```
 
 ### The Two-Pass AI System
@@ -68,19 +68,19 @@ Each test then runs in its own isolated Python subprocess, completely decoupled 
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                     Frontend (React + Vite)              │
-│                                                          │
-│  HomePage ──> UrlInput ──> [GET /api/token]              │
-│                    │                                     │
-│                    └──> [GET /api/run-tests?url=...      │
-│                              &token=...] (SSE stream)    │
-│                                                          │
-│  ResultsPage <── Zustand Store <── sseService.js         │
-│  SummaryBar / CategoryTabs / TestCard / DownloadButton   │
+│                     Frontend (React + Vite)             │
+│                                                         │
+│  HomePage ──> UrlInput ──> [GET /api/token]             │
+│                    │                                    │
+│                    └──> [GET /api/run-tests?url=...     │
+│                              &token=...] (SSE stream)   │
+│                                                         │
+│  ResultsPage <── Zustand Store <── sseService.js        │
+│  SummaryBar / CategoryTabs / TestCard / DownloadButton  │
 └──────────────────────────┬──────────────────────────────┘
                            │ SSE (fetch + ReadableStream)
-┌──────────────────────────▼──────────────────────────────┐
-│                   Backend (FastAPI)                       │
+┌──────────────────────────▼───────────────────────────────┐
+│                   Backend (FastAPI)                      │
 │                                                          │
 │  /api/token  ──> HMAC token (60s TTL, single-use)        │
 │  /api/run-tests                                          │
@@ -97,7 +97,7 @@ Each test then runs in its own isolated Python subprocess, completely decoupled 
 │       └── playwright_runner.py                           │
 │             └── subprocess per test (isolated event loop)│
 │                   → temp .py harness → chromium headless │
-└─────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────┘
 ```
 
 ---
